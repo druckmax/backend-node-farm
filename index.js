@@ -2,6 +2,8 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
+const replaceTemplate = require("./modules/replaceTemplate.js");
+
 ///////////////////////////////////////////////
 // FILES
 
@@ -50,24 +52,7 @@ const tempProduct = fs.readFileSync(
   "utf-8"
 );
 
-// Callback function which repalces the placeholders in the templates
-const replaceTemplate = (temp, product) => {
-  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-  output = output.replace(/{%IMAGE%}/g, product.image);
-  output = output.replace(/{%PRICE%}/g, product.price);
-  output = output.replace(/{%NUTRIENTS%}/g, product.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, product.quantity);
-  output = output.replace(/{%FROM%}/g, product.from);
-  output = output.replace(/{%DESCRIPTION%}/g, product.description);
-  output = output.replace(/{%ID%}/g, product.id);
-
-  if (!product.organic)
-    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
-
-  return output;
-};
-
-// Initializing the server
+// Initializing the server/Router
 const server = http.createServer((req, res) => {
   // Getting the query out of the url e.g. (?id=0); true puts query in object
   // console.log(url.parse(req.url, true))
@@ -90,7 +75,7 @@ const server = http.createServer((req, res) => {
     // Retrieving the product from the dataObj based on the query object {id: 0}
     const product = dataObj[query.id];
     // Replace the placeholders in the template with the values of the retrieved product object
-    const output = replaceTemplate(tempProduct, product)
+    const output = replaceTemplate(tempProduct, product);
 
     res.end(output);
 
