@@ -2,6 +2,9 @@ const fs = require("fs");
 const http = require("http");
 const url = require("url");
 
+// A slug is the last part of an URL that contains an unique string that identifies the resource that the website is displaying: Instead of ?id=0 we can put /fresh-avocados
+const slugify = require("slugify");
+
 const replaceTemplate = require("./modules/replaceTemplate.js");
 
 ///////////////////////////////////////////////
@@ -37,6 +40,11 @@ console.log("Will read file!"); */
 // Synchronous is ok when in top level and desirable because it is only executed once in the beggining and is not a danger to other code executing
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
+
+// Create unique slugs for different products
+const slugs = dataObj.map((product) =>
+  slugify(product.productName, { lower: true })
+);
 
 // Loading the different templates
 const tempOverview = fs.readFileSync(
